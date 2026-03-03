@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sexta-Feira - Nexus OS</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --primary: #3b82f6;
+            /* Azul cibernético */
+            --primary-hover: #2563eb;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            --msg-user: #1e3a8a;
+            /* Azul escuro do usuário */
+            --msg-ai: #1f2937;
+            /* Cinza escuro da IA */
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Fundo estiloso com grid subjacente */
+            background-image:
+                linear-gradient(rgba(11, 15, 25, 0.9), rgba(11, 15, 25, 0.9)),
+                linear-gradient(to right, #1f2937 1px, transparent 1px),
+                linear-gradient(to bottom, #1f2937 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 85vh;
+            background-color: var(--panel-bg);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(59, 130, 246, 0.1) inset;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background-color: rgba(17, 24, 39, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background-color: var(--msg-user);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.ai {
+            background-color: var(--msg-ai);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message.ai p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .message .sender-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background-color: var(--panel-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            height: 24px;
+            max-height: 120px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #chat-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        #btn-send {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #btn-send:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #btn-send:disabled {
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .dots span {
+            animation: blink 1.4s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 0.2;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>
+                <div class="status-dot"></div>
+                Sexta-Feira OS
+            </h2>
+            <span style="font-size: 0.8rem; color: var(--text-muted)">NEXUS PROXY ACTIVATED</span>
+        </div>
+
+        <div class="chat-history" id="chat-history">
+            <div class="message ai">
+                <span class="sender-name">Sexta-Feira</span>
+                <p>Sistemas online, Chefe. Como posso te auxiliar na plataforma Nexus hoje?</p>
+            </div>
+            <!-- Mensagens serão inseridas aqui via JS -->
+            <div class="typing-indicator" id="typing-indicator">
+                Sexta-Feira está processando <span class="dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <textarea id="chat-input" placeholder="Comande, Chefe... (Enter para enviar)" rows="1"></textarea>
+            <button id="btn-send">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const inputEl = document.getElementById('chat-input');
+        const btnSend = document.getElementById('btn-send');
+        const chatHistoryEl = document.getElementById('chat-history');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Arrumar a altura do textarea automaticamente
+        inputEl.addEventListener('input', function () {
+            this.style.height = '24px';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Este é o array que vai guardar todo o histórico da conversa!
+        // O formato exigido pela API do Gemini é: { role: "user" | "model", parts: [{ text: "..." }] }
+        let chatContext = [];
+
+        function appendMessage(text, isUser = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+
+            const senderSpan = document.createElement('span');
+            senderSpan.className = 'sender-name';
+            senderSpan.innerText = isUser ? 'You (Chefe)' : 'Sexta-Feira';
+
+            const p = document.createElement('p');
+            p.innerText = text;
+
+            msgDiv.appendChild(senderSpan);
+            msgDiv.appendChild(p);
+
+            // Inserir antes do indicador de "digitando"
+            chatHistoryEl.insertBefore(msgDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            // 1. Limpa o input e desabilita
+            inputEl.value = '';
+            inputEl.style.height = '24px';
+            btnSend.disabled = true;
+            inputEl.disabled = true;
+
+            // 2. Coloca a mensagem do usuário na tela
+            appendMessage(text, true);
+
+            // 3. Adiciona a mensagem do usuário no array de histórico
+            chatContext.push({
+                role: "user",
+                parts: [{ text: text }]
+            });
+
+            // Mostra o "digitando..."
+            typingIndicator.classList.add('active');
+            scrollToBottom();
+
+            try {
+                // 4. Faz a requisição para a nossa Serverless Function da Vercel
+                // (Para testar localmente, você chamaria um backend localhost. Para a Vercel, o caminho costuma ser /api/chat)
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    // Passamos o histórico COMPLETO! Assim a IA lembra de tudo.
+                    body: JSON.stringify({ contents: chatContext })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro do servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.reply) {
+                    // 5. Mostra a resposta da IA na tela
+                    appendMessage(data.reply, false);
+
+                    // 6. Guarda a resposta da IA no histórico para lembrar na próxima pergunta
+                    chatContext.push({
+                        role: "model",
+                        parts: [{ text: data.reply }]
+                    });
+                } else {
+                    appendMessage("Erro na matriz, Chefe. A resposta veio vazia.", false);
+                }
+
+            } catch (error) {
+                console.error("Erro na comunicação:", error);
+                appendMessage("Parece que os canais de comunicação com os servidores foram cortados. (Erro de proxy)", false);
+
+                // Em caso de erro, remove a última mensagem do usuário do histórico para não corromper o fluxo
+                chatContext.pop();
+            } finally {
+                // Libera o input de novo
+                typingIndicator.classList.remove('active');
+                btnSend.disabled = false;
+                inputEl.disabled = false;
+                inputEl.focus();
+            }
+        }
+
+        btnSend.addEventListener('click', sendMessage);
+
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
