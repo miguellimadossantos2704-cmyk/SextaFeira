@@ -1,5 +1,5 @@
 // 1. GERE UMA CHAVE NOVA NO AI STUDIO E COLE AQUI!
-const apiKey = "SUA_NOVA_CHAVE_AQUI"; 
+const apiKey = "AIzaSyB1DazEcPxxyHjXFCpYWB2O4eVU64MjE_M"; 
 
 // --- FUNÇÃO PARA EU FALAR COM VOCÊ ---
 function falar(texto) {
@@ -60,3 +60,4 @@ async function perguntarSextaFeira() {
         display.innerText = "Erro na Matrix! Chame o suporte (eu mesma). 💥";
     }
 }
+
