@@ -1,5 +1,5 @@
 // Substitua pela sua chave real que você guardou no cofre!
-const apiKey = "AIzaSyABOmVCTaGI5QhTpTO8EWxkLO7WxNbcxpM"; 
+const apiKey = ""; 
 
 async function perguntarSextaFeira() {
     const input = document.getElementById('input-user');
@@ -32,3 +32,4 @@ async function perguntarSextaFeira() {
         display.innerText = "Erro na Matrix! Verifique a conexão. 💥";
     }
 }
+
