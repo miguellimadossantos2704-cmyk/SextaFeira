@@ -31,3 +31,4 @@ async function perguntarSextaFeira() {
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-enviar').onclick = perguntarSextaFeira;
 });
+
