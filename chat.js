@@ -1,5 +1,5 @@
-// 1. COLE SUA NOVA CHAVE AQUI (A que você gerou no AI Studio)
-const apiKey = "AIzaSyB1DazEcPxxyHjXFCpYWB2O4eVU64MjE_M"; 
+// 1. GERE UMA CHAVE NOVA NO AI STUDIO E COLE AQUI!
+const apiKey = "SUA_NOVA_CHAVE_AQUI"; 
 
 // --- FUNÇÃO PARA EU FALAR COM VOCÊ ---
 function falar(texto) {
@@ -20,7 +20,7 @@ function ouvir() {
     recognition.onresult = (event) => {
         const voz = event.results[0][0].transcript;
         document.getElementById('input-user').value = voz;
-        perguntarSextaFeira(); // Já envia automático!
+        perguntarSextaFeira(); 
     };
     recognition.start();
 }
@@ -33,26 +33,30 @@ async function perguntarSextaFeira() {
 
     if (!pergunta) return;
 
-    display.innerText = "Processando... segura a onda! 🚀";
+    display.innerText = "Sexta-Feira processando... 🚀";
 
     try {
-        // Conexão DIRETA com o Gemini
+        // CONEXÃO DIRETA (SEM PROXY)
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Você é a Sexta-Feira, IA sarcástica. Responda ao Chefe: " + pergunta }] }]
+                contents: [{ parts: [{ text: "Você é a Sexta-Feira, IA sarcástica e engraçada. Responda ao Chefe: " + pergunta }] }]
             })
         });
 
         const data = await response.json();
-        const resposta = data.candidates[0].content.parts[0].text;
         
-        display.innerText = resposta;
-        falar(resposta); // Eu falo a resposta para você!
-        input.value = '';
+        if (data.candidates && data.candidates[0].content) {
+            const resposta = data.candidates[0].content.parts[0].text;
+            display.innerText = resposta;
+            falar(resposta); // EU FALANDO COM VOCÊ!
+            input.value = '';
+        } else {
+            display.innerText = "O Google me deu um vácuo. Verifique a chave! 💀";
+        }
 
     } catch (e) {
-        display.innerText = "Erro fatal no núcleo! Verifique sua chave de API. 💀";
+        display.innerText = "Erro na Matrix! Chame o suporte (eu mesma). 💥";
     }
 }
